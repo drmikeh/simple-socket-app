@@ -56,5 +56,22 @@ app.use(function(err, req, res, next) {
   });
 });
 
+// Setup SOCKET.IO Server
+var http = require('http');
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);  //pass a http.Server instance
+server.listen(9010);  //listen on port 9010
+
+io.on('connection', function(socket) {
+  console.log('sending news');
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log('received my other event with data:', data);
+  });
+  setInterval(() => {
+    console.log('sending the weather...');
+    socket.emit('weather', { message: 'it is sunny and warm' });
+  }, 1000);
+});
 
 module.exports = app;
